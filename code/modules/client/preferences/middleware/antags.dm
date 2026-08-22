@@ -36,7 +36,9 @@ GLOBAL_LIST_INIT(non_ruleset_antagonists, list(
 	return data
 
 /datum/preference_middleware/antags/get_ui_assets()
-	var/datum/asset/spritesheet/antagonists/antag_assets = get_asset_datum(/datum/asset/spritesheet/antagonists)
+	// Hoisted into a local: OpenDream mistypes a proc call used directly as a
+	// list literal element here, which drops the asset from the returned list.
+	var/datum/asset/spritesheet_batched/antagonists/antag_assets = get_asset_datum(/datum/asset/spritesheet_batched/antagonists)
 	return list(
 		antag_assets,
 	)
