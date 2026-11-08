@@ -1,6 +1,6 @@
 /obj/machinery/door/poddoor/story
-	name = "hardened blast door"
-	desc = "A heavy duty blast door that only opens for dire emergencies."
+	name = "reinforced blast door"
+	desc = "A heavy armored door that only opens in case of dire necessity."
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 
 /obj/machinery/door/poddoor/story/crowbar_act(mob/living/user, obj/item/tool)
@@ -8,8 +8,8 @@
 
 /obj/machinery/door/manual_airlock
 	name = "manual airlock"
-	desc = "An old-fashioned airlock with a manual valve that needs to be turned multiple times to unlock. \
-			Right-click to start turning the valve, left-click to open once fully turned. Right-click to close."
+	desc = "An old-fashioned airlock with a manual valve that needs to be turned several times to unlock. \
+			RMB — start turning the valve, LMB — open the door after a full turn. RMB — close."
 	icon = 'modular_zvents/icons/doors/manual_airlock.dmi'
 	icon_state = "door_closed"
 	base_icon_state = "door"
@@ -75,18 +75,17 @@
 
 	var/right_click = modifiers[RIGHT_CLICK]
 
-
 	if(right_click)
 		if(valve_blocked)
-			to_chat(user, span_warning("The valve is blocked and won't turn!"))
+			to_chat(user, span_warning("The valve is jammed and won't turn!"))
 			return
 		if(auto_turning)
 			stop_turning(user)
 			return
 
 		var/open = TRUE
-		// let's chose what we gona do
-		if (turns != max_turns && turns != 0)
+		// Determine what we're going to do
+		if(turns != max_turns && turns != 0)
 			var/list/radial_options = list()
 			radial_options["Lock"] = image(icon = 'icons/hud/radial.dmi', icon_state = "radial_lock")
 			radial_options["Unlock"] = image(icon = 'icons/hud/radial.dmi', icon_state = "radial_unlock")
@@ -129,16 +128,14 @@
 	else
 		turns++
 
-
 	playsound(src, 'modular_zvents/sounds/gatedoor_valve.ogg', 50, TRUE)  // Custom sound
-	balloon_alert(user,"Turn the valve ([turns]/[max_turns]).")
+	balloon_alert(user, "Turn the valve ([turns]/[max_turns])")
 	update_icon()
 	update_overlays()
 
 	if(turns >= max_turns)
 		to_chat(user, span_notice("The valve is fully turned!"))
 		return
-
 
 	auto_turning = TRUE
 	addtimer(CALLBACK(src, PROC_REF(continue_turning), user, opening), turn_delay)
@@ -147,10 +144,8 @@
 /obj/machinery/door/manual_airlock/proc/stop_turning(mob/user)
 	auto_turning = FALSE
 
-
-
 	playsound(src, 'modular_zvents/sounds/gatedoor_valve.ogg', 50, TRUE)
-	balloon_alert(user, "Stop turning!")
+	balloon_alert(user, "Turning stopped!")
 	update_icon()
 	update_overlays()
 
@@ -163,7 +158,6 @@
 		stop_turning(user)
 		return
 
-
 	if(!do_after(user, turn_delay, src, extra_checks = CALLBACK(src, PROC_REF(can_continue_turning), user)))
 		stop_turning(user)
 		return
@@ -174,10 +168,10 @@
 		turns++
 
 	playsound(src, 'modular_zvents/sounds/gatedoor_valve.ogg', 50, TRUE)
-	balloon_alert(user,"Turn the valve ([turns]/[max_turns]).")
+	balloon_alert(user, "Turn the valve ([turns]/[max_turns])")
 	update_icon()
 
-	// Continue auto-turning
+	// Continue automatic turning
 	addtimer(CALLBACK(src, PROC_REF(continue_turning), user, opening), turn_delay)
 
 /obj/machinery/door/manual_airlock/proc/can_continue_turning(mob/user)
@@ -193,13 +187,13 @@
 				return
 			valve_blocked = TRUE
 			// playsound(src, 'sound/effects/metal_jam.ogg', 50, TRUE)
-			to_chat(user, span_notice("You jam the valve with [I], blocking it!"))
+			to_chat(user, span_notice("You jam the valve with [I]!"))
 			update_icon()
 			update_overlays()
 			return
 	if(valve_blocked && istype(I, /obj/item/crowbar))
 		if(!do_after(user, 3 SECONDS, src))
-			to_chat(user, span_warning("You stop prying the jam."))
+			to_chat(user, span_warning("You stop prying out the jam."))
 			return
 		valve_blocked = FALSE
 		// playsound(src, 'sound/effects/metal_unjam.ogg', 50, TRUE)
@@ -210,11 +204,11 @@
 
 
 /obj/machinery/door/manual_airlock/open(forced = FALSE)
-	if(operating || welded || locked)  // Inherit parent checks
+	if(operating || welded || locked)
 		return FALSE
 
 	if(valve_blocked)
-		to_chat(usr, span_warning("The valve is blocked; the door won't budge!"))
+		to_chat(usr, span_warning("The valve is jammed — the door won't budge!"))
 		return FALSE
 
 	if(turns != 0 && !forced)
@@ -250,8 +244,8 @@
 
 /obj/machinery/hypothermia/heater
 	name = "Heater"
-	desc = "A soviet-made simple heater. Runs on a standard power cell."
-	icon = 'modular_skyrat/modules/colony_fabricator/icons/thermomachine.dmi'
+	desc = "A simple Soviet heater. Runs off a standard power cell."
+	icon = 'modular_zvents/icons/machinery/thermomachine.dmi'
 	icon_state = "thermo_base"
 	base_icon_state = "thermo_base"
 	density = TRUE
@@ -273,7 +267,7 @@
 	var/efficiency = BASE_HEATING_ENERGY / (STANDARD_CELL_CHARGE * 3)
 
 	var/datum/component/heat_source/heat_comp
-	var/datum/looping_sound/conditioner_running/soundloop
+	var/datum/looping_sound/soundloop
 
 	light_color = COLOR_FIRE_LIGHT_RED
 
@@ -282,14 +276,14 @@
 	if(ispath(cell))
 		cell = new cell(src)
 
-	soundloop = new(src, FALSE)
+	// soundloop = new(src, FALSE)
 
 	AddElement(/datum/element/contextual_screentip_bare_hands, rmb_text = "Toggle power")
 
 	var/static/list/tool_behaviors = list(
-		TOOL_SCREWDRIVER = list(SCREENTIP_CONTEXT_LMB = "Open hatch"),
+		TOOL_SCREWDRIVER = list(SCREENTIP_CONTEXT_LMB = "Open the cover"),
 		TOOL_WRENCH = list(
-			SCREENTIP_CONTEXT_LMB = "Anchor",
+			SCREENTIP_CONTEXT_LMB = "Anchor/unanchor",
 			SCREENTIP_CONTEXT_CTRL_LMB = "Increase target temperature",
 			SCREENTIP_CONTEXT_CTRL_RMB = "Decrease target temperature"
 		)
@@ -303,7 +297,7 @@
 
 /obj/machinery/hypothermia/heater/Destroy()
 	QDEL_NULL(cell)
-	QDEL_NULL(soundloop)
+	// QDEL_NULL(soundloop)
 	QDEL_NULL(heat_comp)
 	STOP_PROCESSING(SSmachines, src)
 	return ..()
@@ -311,7 +305,6 @@
 /obj/machinery/hypothermia/heater/process(seconds_per_tick)
 	var/energy_used = (heating_energy/100) * seconds_per_tick
 	var/power_source_used = FALSE
-
 
 	if(anchored && powered() && use_energy(energy_used / efficiency, channel = AREA_USAGE_EQUIP))
 		power_source_used = TRUE
@@ -349,13 +342,13 @@
 /obj/machinery/hypothermia/heater/wrench_act(mob/living/user, obj/item/tool)
 	tool.play_tool_sound(src)
 	anchored = !anchored
-	balloon_alert(user, anchored ? "secured" : "unsecured")
+	balloon_alert(user, anchored ? "anchored" : "unanchored")
 	return TRUE
 
 
 /obj/machinery/hypothermia/heater/default_deconstruction_screwdriver(mob/user, icon_state_open, icon_state_closed, obj/item/screwdriver)
 	if(on)
-		balloon_alert(user, "Disable first!")
+		balloon_alert(user, "Turn it off first!")
 		return
 	..()
 
@@ -363,10 +356,10 @@
 /obj/machinery/hypothermia/heater/attackby(obj/item/I, mob/user, params)
 	if(istype(I, /obj/item/stock_parts/power_store/cell))
 		if(!panel_open)
-			balloon_alert(user, "open hatch first")
+			balloon_alert(user, "Open the cover first")
 			return TRUE
 		if(cell)
-			balloon_alert(user, "cell already installed")
+			balloon_alert(user, "Cell already installed")
 			return TRUE
 		if(!user.transferItemToLoc(I, src))
 			return
@@ -388,11 +381,11 @@
 	if(panel_open)
 		if(RIGHT_CLICK in modifiers)
 			target_temperature = max(target_temperature - 5, T0C + 10)
-			balloon_alert(user, "target temp: [target_temperature - T0C]°C")
+			balloon_alert(user, "target: [target_temperature - T0C]°C")
 			return TRUE
 		else if(!(CTRL_CLICK in modifiers))
 			target_temperature = min(target_temperature + 5, T0C + 60)
-			balloon_alert(user, "target temp: [target_temperature - T0C]°C")
+			balloon_alert(user, "target: [target_temperature - T0C]°C")
 			return TRUE
 		else if(ishuman(user))
 			var/mob/living/carbon/human/human = user
@@ -407,21 +400,21 @@
 /obj/machinery/hypothermia/heater/proc/turn_on()
 	if(!anchored)
 		if(!cell)
-			balloon_alert(usr, "no cell")
+			balloon_alert(usr, "no power cell")
 			return
 		if(!cell?.charge)
-			balloon_alert(usr, "no charge")
+			balloon_alert(usr, "cell depleted")
 			return
 	else
 		if(use_energy(heating_energy / efficiency, channel = AREA_USAGE_EQUIP))
-			balloon_alert(usr, "Running on APC")
+			balloon_alert(usr, "Running on grid power")
 		else
-			balloon_alert(usr, "No power in APC")
+			balloon_alert(usr, "No grid power")
 			return
 
 	on = TRUE
 	update_appearance()
-	balloon_alert(usr, "heater on")
+	balloon_alert(usr, "heater turned on")
 
 	if(on && !soundloop.loop_started)
 		soundloop.start()
@@ -437,7 +430,7 @@
 /obj/machinery/hypothermia/heater/proc/turn_off()
 	on = FALSE
 	update_appearance()
-	balloon_alert(usr, "heater off")
+	balloon_alert(usr, "heater turned off")
 
 	if(heat_comp)
 		qdel(heat_comp)
@@ -449,4 +442,3 @@
 	update_light()
 
 #undef BASE_HEATING_ENERGY
-

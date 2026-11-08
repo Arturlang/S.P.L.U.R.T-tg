@@ -159,7 +159,7 @@
 
 	var/new_level = HYPOTHERMIA_COLDLEVEL_SAFE
 	var/list/new_data
-	for(var/list/data in thresholds)  // sorted descending, find deepest level
+	for(var/list/data in thresholds)  // find the deepest level
 		if(stored_bodytemperature < data["temp"])
 			new_level = data["level"]
 			new_data = data
@@ -233,15 +233,15 @@
 
 			if(COOLDOWN_FINISHED(src, mild_message_cooldown))
 				var/list/messages = is_synth ? list(
-					"Alert: Cooling detected in chassis...",
-					"Warning: Circuitry temperature dropping.",
-					"Alert: Hydraulic fluid viscosity increasing.",
-					"System notice: Minor power fluctuations due to cold.",
-					"Warning: External temperature impacting efficiency."
+					"Warning: chassis cooling detected...",
+					"Caution: circuit temperature dropping.",
+					"Warning: hydraulic fluid viscosity increasing.",
+					"System notice: minor power fluctuations due to cold.",
+					"Caution: external temperature reducing efficiency."
 				) : list(
-					"You feel the cold creeping under your skin...",
-					"Your teeth begin to chatter uncontrollably.",
-					"Your fingertips are starting to go numb.",
+					"The cold starts creeping under your skin...",
+					"Your teeth start chattering on their own.",
+					"Your fingertips start going numb.",
 					"Goosebumps cover your arms.",
 					"A deep chill settles in your chest."
 				)
@@ -253,17 +253,17 @@
 			if(COOLDOWN_FINISHED(src, confusion_cooldown))
 				L.adjust_jitter(10 SECONDS)
 				var/list/messages = is_synth ? list(
-					"Error: Processing delay due to low temperature...",
-					"Warning: System glitches detected.",
-					"Alert: Sensor data corrupted by cold.",
-					"Error: Logic circuits slowing.",
-					"Warning: Memory access delayed."
+					"Error: processing lag due to low temperature...",
+					"Warning: system glitches detected.",
+					"Caution: sensor data distorted by the cold.",
+					"Error: logic circuits slowing down.",
+					"Warning: memory access delay."
 				) : list(
-					"Your thoughts are becoming sluggish and foggy...",
+					"Your thoughts grow sluggish and muddy...",
 					"The world feels distant and unreal.",
 					"You can't remember why you came here...",
-					"Everything is starting to blur together.",
-					"It's getting harder to focus your eyes."
+					"Everything starts blurring into one...",
+					"It's getting harder to focus your gaze."
 				)
 				to_chat(L, span_warning(pick(messages)))
 				COOLDOWN_START(src, confusion_cooldown, rand(30, 60) SECONDS)
@@ -282,19 +282,19 @@
 		if(HYPOTHERMIA_COLDLEVEL_HIGH)
 			if(SPT_PROB(10, seconds_per_tick) && COOLDOWN_FINISHED(src, paradox_cooldown))
 				var/list/messages = is_synth ? list(
-					"ERROR: OVERHEAT DETECTED! EMERGENCY VENTING!",
-					"SYSTEM FAULT: THERMAL OVERLOAD!",
-					"CRITICAL ERROR: REMOVE EXTERNAL LAYERS!"
+					"ERROR: OVERHEAT DETECTED! EMERGENCY HEAT DUMP!",
+					"SYSTEM MALFUNCTION: THERMAL OVERLOAD!",
+					"CRITICAL ERROR: REMOVE OUTER LAYERS!"
 				) : list(
-					"IT'S TOO HOT! GET THIS IS BURNING ME!",
-					"GET IT OFF! I'M ON FIRE!",
-					"CLOTHES ARE SUFFOCATING ME!"
+					"TOO HOT! IT'S BURNING ME!",
+					"TAKE IT OFF! I'M ON FIRE!",
+					"THE CLOTHES ARE SUFFOCATING ME!"
 				)
 				to_chat(L, span_userdanger(pick(messages)))
 				paradox_undress(L)
 				COOLDOWN_START(src, paradox_cooldown, rand(120 SECONDS, 300 SECONDS))
 
-			if(SPT_PROB(10, seconds_per_tick)&& COOLDOWN_FINISHED(src, frostbite_cooldown))
+			if(SPT_PROB(10, seconds_per_tick) && COOLDOWN_FINISHED(src, frostbite_cooldown))
 				apply_frostbite(L, rand(10, 18) * cold_mod)
 				COOLDOWN_START(src, frostbite_cooldown, rand(30, 90) SECONDS)
 
@@ -318,15 +318,15 @@
 
 			if(SPT_PROB(1, seconds_per_tick))
 				var/list/messages = is_synth ? list(
-					"Critical: All systems freezing...",
-					"Error: Power failure imminent.",
+					"Critical: all systems freezing...",
+					"Error: power failure imminent.",
 					"Shutdown sequence initiated...",
-					"Alert: Core temperature critical."
+					"Warning: critical core temperature."
 				) : list(
 					"You can't feel anything anymore...",
-					"The cold has swallowed everything.",
-					"It's so quiet... so peaceful...",
-					"Your heart barely beats..."
+					"The cold has swallowed everything around you.",
+					"So quiet... so peaceful...",
+					"Your heart is barely beating..."
 				)
 				to_chat(L, span_userdanger(pick(messages)))
 
@@ -420,7 +420,7 @@
 	limb.update_disabled()
 	disabled_limbs[limb] = world.time + rand(60 SECONDS, 150 SECONDS)
 
-	to_chat(C, span_userdanger("Your [limb.name] goes completely numb — you can't feel or move it!"))
+	to_chat(C, span_userdanger("Your [limb.name] has gone completely numb — you can't feel it or move it at all!"))
 
 /datum/component/hypothermia/proc/apply_frostbite(mob/living/L, damage)
 	if(!iscarbon(L))
@@ -431,14 +431,15 @@
 	if(!affecting)
 		return
 	affecting.receive_damage(burn = max(1, round(damage * 0.6)), wound_bonus = 8)
-	to_chat(L, span_danger("Your [affecting.name] burns with freezing pain and turns black!"))
+	to_chat(L, span_danger("Your [affecting.name] burns with icy pain and turns black!"))
+
 
 /datum/component/hypothermia/proc/paradox_undress(mob/living/carbon/C)
 	var/list/items = C.get_equipped_items()
 	items += C.held_items
 	for(var/obj/item/I in shuffle(items))
-		to_chat(C, span_userdanger("[I.name] burns you, you want to take it off!"))
-		to_chat(C, span_notice("Too hot... must... cool down..."))
+		to_chat(C, span_userdanger("[I.name] is burning you, you want to take it off!"))
+		to_chat(C, span_notice("Too hot... need to... cool down..."))
 		break
 
 /datum/movespeed_modifier/hypothermia_mild
@@ -521,7 +522,7 @@
 	if(heat_range > 0)
 		for(var/mob/living/L in range(heat_range, parent))
 			var/atom/movable/screen/alert/heating/alert = L.throw_alert(alert_category, /atom/movable/screen/alert/heating, new_master = parent)
-			alert.desc = "You are heating by [parent]."
+			alert.desc = "[parent] is warming you."
 			alerts[L] = TRUE
 
 			var/dist = get_dist(AM, L)
@@ -536,73 +537,6 @@
 	name = "Heating"
 	icon_state = "template"
 	use_user_hud_icon = TRUE
-
-
-
-/datum/component/perma_death_timer
-	dupe_mode = COMPONENT_DUPE_UNIQUE
-	var/time_left = 10 MINUTES
-	var/last_decrease_time = 0
-	var/active = FALSE
-
-/datum/component/perma_death_timer/Initialize()
-	. = ..()
-	if(!iscarbon(parent))
-		return COMPONENT_INCOMPATIBLE
-	RegisterSignal(parent, COMSIG_LIVING_DEATH, PROC_REF(start_timer))
-	RegisterSignal(parent, COMSIG_LIVING_REVIVE, PROC_REF(on_revive))
-
-/datum/component/perma_death_timer/Destroy()
-	UnregisterSignal(parent, list(COMSIG_LIVING_DEATH, COMSIG_LIVING_REVIVE))
-	STOP_PROCESSING(SSobj, src)
-	return ..()
-
-/datum/component/perma_death_timer/proc/start_timer(datum/source)
-	SIGNAL_HANDLER
-	if(active)
-		return
-	var/mob/living/carbon/C = parent
-	to_chat(C, span_warning("You feel your life force fading... Revival window closing in 10 minutes!"))
-	last_decrease_time = world.time
-	active = TRUE
-	START_PROCESSING(SSobj, src)
-
-/datum/component/perma_death_timer/proc/on_revive(datum/source)
-	SIGNAL_HANDLER
-	active = FALSE
-	time_left = initial(time_left)
-	STOP_PROCESSING(SSobj, src)
-
-/datum/component/perma_death_timer/process(seconds_per_tick)
-	var/mob/living/carbon/C = parent
-	var/delta = world.time - last_decrease_time
-	var/paused = FALSE
-
-	if(HAS_TRAIT(C, TRAIT_STASIS))
-		paused = TRUE
-	else if(C.bodytemperature <= T0C)
-		paused = TRUE
-	else if(C.reagents.has_reagent(/datum/reagent/toxin/formaldehyde, 0.01))
-		C.reagents.remove_reagent(/datum/reagent/toxin/formaldehyde, 0.01)
-		paused = TRUE
-
-	if(!paused)
-		C.adjust_organ_loss(ORGAN_SLOT_BRAIN, 0.1 * seconds_per_tick)
-		time_left -= delta
-
-	last_decrease_time = world.time
-
-	if(time_left <= 0)
-		make_perma_dead()
-		STOP_PROCESSING(SSobj, src)
-		active = FALSE
-
-/datum/component/perma_death_timer/proc/make_perma_dead()
-	var/mob/living/carbon/C = parent
-	if(!C || C.stat != DEAD)
-		return
-	ADD_TRAIT(C, TRAIT_DNR, "perma_death_timer")
-	to_chat(C, span_userdanger("Your essence has dissipated... Revival is now impossible."))
 
 /atom/movable/screen/fullscreen/cold_effect
 	icon = 'modular_zvents/icons/fullscreen/fullscreen_effects.dmi'

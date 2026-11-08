@@ -528,7 +528,7 @@
 		if(reagents && (reagents.has_reagent(/datum/reagent/toxin/formaldehyde, 1) || reagents.has_reagent(/datum/reagent/cryostylane))) // No organ decay if the body contains formaldehyde.
 			return
 		var/datum/component/hypothermia/hypo = GetComponent(__IMPLIED_TYPE__)
-		if(hypo.coldlevel >= 4)
+		if(hypo?.coldlevel >= 4)
 			return
 		var/rot_count = 0 //BUBBERSTATION CHANGE: MIASMA ORGAN ROT
 		for(var/obj/item/organ/organ in organs)

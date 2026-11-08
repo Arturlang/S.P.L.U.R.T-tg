@@ -24,7 +24,21 @@
 	planetary_atmos = TRUE
 	baseturfs = /turf/open/chasm/icy_planet
 
+/turf/open/chasm/icy_planet/TerraformTurf(path, new_baseturf, flags)
+	return
 
+/turf/open/chasm/icy_planet/rcd_act(mob/user, obj/item/construction/rcd/the_rcd, list/rcd_data)
+	return
+
+/turf/open/chasm/icy_planet/Melt()
+	to_be_destroyed = FALSE
+	return src
+
+/turf/open/chasm/icy_planet/attackby(obj/item/C, mob/user, list/modifiers, list/attack_modifiers)
+	return
+
+/turf/open/chasm/icy_planet/build_with_rods(obj/item/stack/rods/used_rods, mob/user)
+	return
 
 /turf/open/misc/icy_planet/snow
 	gender = PLURAL
@@ -174,7 +188,7 @@
 
 /turf/closed/mineral/random/icy_planet/cave
 	name = "mountainside"
-	icon = MAP_SWITCH('modular_skyrat/modules/liquids/icons/turf/smoothrocks.dmi', 'icons/turf/mining.dmi') // SKYRAT EDIT CHANGE
+	icon = MAP_SWITCH('icons/turf/smoothrocks.dmi', 'icons/turf/mining.dmi')
 	icon_state = "rock"
 	smoothing_groups = SMOOTH_GROUP_CLOSED_TURFS + SMOOTH_GROUP_MINERAL_WALLS
 	canSmoothWith = SMOOTH_GROUP_MINERAL_WALLS

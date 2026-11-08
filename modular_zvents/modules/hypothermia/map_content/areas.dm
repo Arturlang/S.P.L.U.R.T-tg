@@ -296,13 +296,17 @@
 
 
 // Planet surface generator
+
 /datum/map_generator/cave_generator/hypothermia
 	weighted_mob_spawn_list = list()
 
-// Surface generators
-/datum/map_generator/cave_generator/hypothermia/surface
-	weighted_closed_turf_types = list(/turf/closed/mineral/random/icy_planet = 1)
-	weighted_open_turf_types = list(/turf/open/misc/icy_planet/snow = 1)
+	weighted_closed_turf_types = list(
+		/turf/closed/mineral/random/icy_planet = 1
+	)
+
+	weighted_open_turf_types = list(
+		/turf/open/misc/icy_planet/snow = 1
+	)
 
 	flora_spawn_chance = 25
 	feature_spawn_chance = 0
@@ -319,8 +323,8 @@
 /datum/map_generator/cave_generator/hypothermia/surface/plato
 	initial_closed_chance = 30
 	smoothing_iterations = 25
-	flora_spawn_chance = 35
 
+	flora_spawn_chance = 35
 	weighted_flora_spawn_list = list(
 		/obj/structure/flora/rock/icy/style_random = 20,
 		/obj/structure/flora/rock/pile/icy/style_random = 10
@@ -328,13 +332,15 @@
 
 
 // Mountains
+
 /datum/map_generator/cave_generator/hypothermia/surface/deisolated
 	initial_closed_chance = 80
 	smoothing_iterations = 40
+
 	birth_limit = 5
 	death_limit = 4
-	flora_spawn_chance = 10
 
+	flora_spawn_chance = 10
 	weighted_flora_spawn_list = list(
 		/obj/structure/flora/ash/chilly = 10,
 		/obj/structure/flora/rock/icy/style_random = 90,
@@ -342,39 +348,58 @@
 	)
 
 
+// Abyss
+
 /datum/map_generator/cave_generator/hypothermia/abyss
 	initial_closed_chance = 70
 	smoothing_iterations = 15
+
 	birth_limit = 3
 	death_limit = 5
-	weighted_flora_spawn_list = null
-	weighted_feature_spawn_list = list(/obj/structure/geyser/random = 1)
+
+	// null means "use the default flora list", an empty list means no flora
+	weighted_flora_spawn_list = list()
+
+	weighted_feature_spawn_list = list(
+		/obj/structure/geyser/random = 1
+	)
+
+	feature_spawn_chance = 0.25
 
 
+// Surface outpost
 
 /datum/map_generator/cave_generator/hypothermia/surface/outpost
 	feature_spawn_chance = 40
 
 
+// Caves
 
-// Caves generators
 /datum/map_generator/cave_generator/hypothermia/caven
 	initial_closed_chance = 45
-	flora_spawn_chance = 10
-	weighted_open_turf_types = list(/turf/open/misc/dirt/icy_planet = 1)
+	smoothing_iterations = 8
 
+	weighted_open_turf_types = list(
+		/turf/open/misc/dirt/icy_planet = 1
+	)
+
+	flora_spawn_chance = 10
 	weighted_flora_spawn_list = list(
 		/obj/structure/flora/rock/icy/style_random = 20,
 		/obj/structure/flora/rock/pile/icy/style_random = 10,
-		/obj/structure/prop/stalagmite/style_random = 10,
+		/obj/structure/prop/stalagmite/style_random = 10
 	)
 
 
+// Deep caves
+
 /datum/map_generator/cave_generator/hypothermia/caven/deep
-	weighted_closed_turf_types = list(/turf/closed/mineral/random/icy_planet/cave = 1)
+	weighted_closed_turf_types = list(
+		/turf/closed/mineral/random/icy_planet/cave = 1
+	)
+
 	mob_spawn_chance = 10
 	smoothing_iterations = 50
-
 
 /obj/effect/mapping_helpers/ztrait_injector/snowstorm
 	traits_to_add = list(ZTRAIT_SNOWSTORM = TRUE)

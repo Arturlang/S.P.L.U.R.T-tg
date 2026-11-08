@@ -3,7 +3,7 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 
 /obj/structure/sneak_pod
 	name = "narrow crevice"
-	desc = "A tight squeeze in the frozen rock, barely wide enough to crawl or sidestep through. Moving through it requires careful maneuvering."
+	desc = "A tight gap in the frozen rock, barely enough to squeeze through by crawling or going sideways. Movement requires careful maneuvering."
 	// icon = 'icons/obj/structures.dmi'
 	icon_state = "crevice"
 	density = TRUE
@@ -14,11 +14,11 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 	armor_type = /datum/armor/none
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 
-	// List of mobs currently crawling
+	// List of mobs currently crawling inside
 	var/list/crawlers = list()
-	// Max small mobs allowed
+	// Maximum number of small mobs
 	var/max_crawlers = 3
-	// Associative list: mob -> list(x, y, transform)
+	// Associative list: mob → list(x, y, transform)
 	var/list/crawler_pixel_offsets = list()
 	var/datum/component/seethrough/filtered/seethrough
 
@@ -46,7 +46,7 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 	if(!can_crawl_into(M, src))
 		return
 	if(!do_after(user, 5 SECONDS, src))
-		user.balloon_alert(user, "Failed to crawl!")
+		user.balloon_alert(user, "Couldn't squeeze through!")
 		return
 	begin_crawl(M)
 
@@ -91,7 +91,7 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 	crawler.pass_flags &= ~(PASSMOB | PASSTABLE)
 	crawler.remove_traits(list(TRAIT_FLOORED, TRAIT_CREVICE_CRAWLER), REF(src))
 	if(!forced)
-		balloon_alert(crawler, "You emerge from the crevice.")
+		balloon_alert(crawler, "You climb out of the crevice.")
 
 
 /obj/structure/sneak_pod/Bumped(atom/movable/bumped_atom)
@@ -104,7 +104,7 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 	if(!can_crawl_into(M, src))
 		return
 	if(!do_after(M, 5 SECONDS, src))
-		M.balloon_alert(M, "Failed to crawl!")
+		M.balloon_alert(M, "Couldn't squeeze through!")
 		return
 	begin_crawl(M)
 
@@ -146,13 +146,13 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 				var/mob/living/carbon/human/OH = other
 				other_size = OH.dna.features["body_size"] || 1
 			if(other_size >= 1)
-				balloon_alert(C, "Next crevice is too crowded!")
+				balloon_alert(C, "The next crevice is too crowded!")
 				return FALSE
 	if(length(next_pod.crawlers) >= next_pod.max_crawlers)
-		balloon_alert(C, "Next crevice is full!")
+		balloon_alert(C, "The crevice is full!")
 		return FALSE
 	if(!C.resting)
-		balloon_alert(C, "Not resting!")
+		balloon_alert(C, "You need to lie down!")
 		return FALSE
 	return TRUE
 
@@ -161,14 +161,14 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 		balloon_alert(C, "Movement interrupted!")
 		return
 	if(!can_crawl_into(C, newloc))
-		balloon_alert(C, "Movement blocked!")
+		balloon_alert(C, "Path is blocked!")
 		return
 	if(!do_after(C, 1 SECONDS, src, IGNORE_USER_LOC_CHANGE | IGNORE_HELD_ITEM, max_interact_count = 1))
 		balloon_alert(C, "Movement interrupted!")
 		return
 	var/obj/structure/sneak_pod/next_pod = locate() in newloc
 	if(isclosedturf(newloc))
-		balloon_alert(C, "The way is blocked!")
+		balloon_alert(C, "Path is sealed off!")
 		return
 	if(next_pod)
 		C.forceMove(newloc)
@@ -209,19 +209,19 @@ GLOBAL_LIST_EMPTY(sneak_pod_list)
 #undef TRAIT_CREVICE_CRAWLER
 
 /obj/structure/sneak_pod/iced
-	name = "ice-covered crevice"
+	name = "iced-over crevice"
 	icon = 'modular_zvents/icons/structures/crevice.dmi'
 	icon_state = "iced"
 
 /obj/structure/sneak_pod/iced/enterence
-	name = "ice-covered crevice"
+	name = "iced-over crevice"
 	icon = 'modular_zvents/icons/structures/crevice.dmi'
 	icon_state = "iced_enterence"
 
 MAPPING_DIRECTIONAL_HELPERS(/obj/structure/sneak_pod/iced/enterence, 27)
 
 /obj/structure/sneak_pod/rock
-	name = "rock crevice"
+	name = "rocky crevice"
 	icon = 'modular_zvents/icons/structures/crevice.dmi'
 	icon_state = "rock"
 
